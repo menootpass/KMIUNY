@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trivia Keliling Stand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue-deep:#0C3E8C; --blue:#1E63D6; --blue-soft:#DCEAFF;
+  --yellow:#FFC531; --yellow-deep:#E89B00;
+  --white:#FFFFFF; --ink:#0B2140; --ink-soft:#4E6390;
+  --pink:#FF6B8B;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:var(--blue-soft);color:var(--ink);overflow-x:hidden;min-height:100%;}
+h1,h2,h3,.disp{font-family:'Baloo 2',cursive;}
+button{font-family:inherit;cursor:pointer;border:none;}
+.wrap{max-width:520px;margin:0 auto;min-height:100vh;background:var(--white);position:relative;box-shadow:0 0 40px rgba(12,62,140,.15);}
+
+/* ---- topbar ---- */
+.topbar{background:var(--blue);color:#fff;padding:18px 20px calc(18px + env(safe-area-inset-top,0px));position:relative;overflow:hidden;}
+.topbar::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;background:var(--yellow);border-radius:40% 60% 55% 45%/50% 40% 60% 50%;opacity:.85;}
+.topbar .row{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;}
+.brand{font-family:'Baloo 2';font-weight:800;font-size:20px;letter-spacing:.2px;}
+.expo{font-family:'Baloo 2';font-weight:800;font-size:14px;line-height:1.05;text-align:center;background:#fff;color:var(--blue-deep);padding:7px 12px;border-radius:12px;transform:rotate(4deg);box-shadow:0 3px 0 var(--blue-deep);}
+.brand small{display:block;font-family:'Plus Jakarta Sans';font-weight:600;font-size:11px;opacity:.85;}
+
+/* ---- hero / home ---- */
+.hero{padding:28px 22px 8px;}
+.hero h1{font-size:34px;line-height:1.05;margin:0 0 10px;color:var(--ink);}
+.hero h1 span{color:var(--blue);}
+.hero p{color:var(--ink-soft);font-size:15px;line-height:1.5;margin:0 0 20px;max-width:38ch;}
+.stamp{display:inline-block;background:var(--yellow);color:var(--blue-deep);font-family:'Baloo 2';font-weight:700;font-size:13px;padding:5px 14px;border-radius:999px;transform:rotate(-3deg);margin-bottom:14px;box-shadow:0 3px 0 var(--yellow-deep);}
+.cta-big{background:var(--blue);color:#fff;font-family:'Baloo 2';font-weight:700;font-size:19px;padding:16px 26px;border-radius:18px;width:100%;box-shadow:0 6px 0 var(--blue-deep);transition:transform .12s;}
+.cta-big:active{transform:translateY(4px);box-shadow:0 2px 0 var(--blue-deep);}
+
+.stands{display:flex;gap:10px;padding:18px 22px 6px;overflow-x:auto;}
+.stand-chip{flex:0 0 auto;background:var(--blue-soft);border-radius:14px;padding:10px 12px;text-align:center;width:78px;}
+.stand-chip .ic{font-size:26px;display:block;}
+.stand-chip .nm{font-size:10px;font-weight:700;color:var(--blue-deep);margin-top:4px;line-height:1.15;display:block;}
+
+.gallery-head{display:flex;align-items:baseline;justify-content:space-between;padding:22px 22px 6px;}
+.gallery-head h2{font-size:20px;margin:0;}
+.gallery-head span{font-size:12px;color:var(--ink-soft);font-weight:600;}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:10px 22px 40px;}
+.polaroid{background:#fff;border:1px solid #eee;border-radius:6px;padding:8px 8px 12px;box-shadow:0 6px 14px rgba(12,62,140,.14);}
+.polaroid:nth-child(odd){transform:rotate(-2.5deg);}
+.polaroid:nth-child(even){transform:rotate(2deg);}
+.polaroid img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:3px;display:block;background:#f0f4fb;}
+.polaroid .cap{display:flex;align-items:center;justify-content:space-between;padding-top:8px;}
+.polaroid .nm{font-family:'Baloo 2';font-weight:700;font-size:13px;}
+.badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;}
+.badge.rare{background:var(--blue);color:#fff;}
+.badge.biasa{background:var(--yellow);color:var(--blue-deep);}
+.badge.zonk{background:#EEE;color:#8892A6;}
+.empty{padding:30px 22px;text-align:center;color:var(--ink-soft);font-size:14px;}
+.empty b{color:var(--blue);}
+
+/* ---- generic screen ---- */
+.screen{padding:20px 22px 40px;min-height:calc(100vh - 90px);}
+.back{background:none;color:var(--blue);font-weight:700;font-size:14px;padding:6px 0;margin-bottom:10px;display:inline-flex;align-items:center;gap:4px;}
+
+/* ---- quiz ---- */
+.dots{display:flex;gap:7px;margin:6px 0 18px;}
+.dot{width:10px;height:10px;border-radius:50%;background:#DCE4F5;}
+.dot.on{background:var(--yellow);}
+.dot.done{background:var(--blue);}
+.card{background:linear-gradient(155deg,var(--blue) 0%,var(--blue-deep) 100%);color:#fff;border-radius:22px;padding:26px 22px;position:relative;overflow:hidden;min-height:280px;display:flex;flex-direction:column;}
+.card::before{content:"";position:absolute;left:-40px;bottom:-40px;width:140px;height:140px;background:rgba(255,255,255,.08);border-radius:45% 55% 60% 40%/50% 45% 55% 50%;}
+.card .ic{font-size:44px;}
+.card .stand{font-family:'Baloo 2';font-weight:800;font-size:23px;margin:8px 0 2px;}
+.card .cat{font-size:12px;opacity:.85;font-weight:600;margin-bottom:16px;}
+.card .q{font-size:16px;line-height:1.45;font-weight:500;position:relative;z-index:2;}
+.hint{margin-top:auto;padding-top:16px;font-size:12px;opacity:.8;display:flex;gap:6px;align-items:center;position:relative;z-index:2;}
+label.fl{display:block;font-size:13px;font-weight:700;color:var(--ink-soft);margin:18px 0 6px;}
+textarea,input[type=text]{width:100%;border:2px solid #E1E8F7;border-radius:14px;padding:13px 14px;font-family:inherit;font-size:15px;resize:none;background:#fff;color:var(--ink);}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--blue);}
+.next{margin-top:18px;width:100%;background:var(--yellow);color:var(--blue-deep);font-family:'Baloo 2';font-weight:800;font-size:17px;padding:15px;border-radius:16px;box-shadow:0 5px 0 var(--yellow-deep);}
+.next:disabled{opacity:.45;box-shadow:0 5px 0 #ccc;}
+.next:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--yellow-deep);}
+
+/* ---- name/photo ---- */
+.field{margin-bottom:16px;}
+.camwrap{position:relative;border-radius:20px;overflow:hidden;background:#0B2140;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;}
+.camwrap video,.camwrap canvas{width:100%;height:100%;object-fit:cover;display:block;}
+.camwrap .frame{position:absolute;inset:0;pointer-events:none;border:6px solid rgba(255,197,49,.9);border-radius:20px;box-sizing:border-box;}
+.snap{width:64px;height:64px;border-radius:50%;background:#fff;border:5px solid var(--yellow);margin:16px auto 0;display:block;box-shadow:0 4px 0 var(--yellow-deep);}
+.stickerbar{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap;}
+.sk{font-size:22px;background:var(--blue-soft);border-radius:12px;padding:8px 10px;}
+.sk.active{background:var(--yellow);}
+.retake{display:block;margin:12px auto 0;color:var(--blue);font-weight:700;font-size:13px;background:none;}
+.camnote{font-size:12px;color:var(--ink-soft);text-align:center;padding:10px 0;}
+
+/* ---- result ---- */
+.result-wrap{text-align:center;padding-top:10px;}
+.spin{width:150px;height:150px;margin:20px auto;border-radius:50%;background:conic-gradient(var(--blue) 0 324deg,var(--yellow) 324deg 353deg,var(--pink) 353deg 360deg);display:flex;align-items:center;justify-content:center;position:relative;animation:spinit 1.8s cubic-bezier(.2,.9,.15,1) forwards;}
+@keyframes spinit{from{transform:rotate(0)}to{transform:rotate(1080deg)}}
+.spin .hub{width:96px;height:96px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;}
+.prize-card{margin-top:8px;padding:24px 20px;border-radius:20px;}
+.prize-card.zonk{background:#EEF1F8;}
+.prize-card.biasa{background:linear-gradient(155deg,#FFE49B,var(--yellow));}
+.prize-card.rare{background:linear-gradient(155deg,var(--blue),var(--blue-deep));color:#fff;}
+.prize-card h2{font-size:26px;margin:6px 0 4px;}
+.prize-card p{margin:0;font-size:14px;opacity:.9;}
+.home-btn{margin-top:22px;width:100%;background:var(--blue);color:#fff;font-family:'Baloo 2';font-weight:800;font-size:16px;padding:15px;border-radius:16px;box-shadow:0 5px 0 var(--blue-deep);}
+
+.hidden{display:none !important;}
+@media (prefers-color-scheme:dark){:root{}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="row">
+      <div class="brand">Trivia Bazar<small>Tanya, jawab, foto, cuan!</small></div>
+      <div class="expo">UNY-KMI<br>Expo 2026</div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div id="scr-home">
+    <div class="hero">
+      <div class="stamp">5 stand • 5 rahasia • 1 foto</div>
+      <h1>Keliling stand, <span>kumpulin cerita</span>, lalu foto & tebak hadiah.</h1>
+      <p>Datangi kelima stand, tanya langsung ke penunggunya, catat jawabannya di sini, lalu tutup dengan foto seru dan buka hadiahmu.</p>
+      <button class="cta-big" onclick="startQuiz()">Mulai Main →</button>
+    </div>
+    <div class="stands" id="standChips"></div>
+    <div class="gallery-head"><h2>Galeri Peserta</h2><span id="galCount">0 foto</span></div>
+    <div id="gallery" class="gallery"></div>
+    <div class="empty hidden" id="emptyMsg">Belum ada yang selesai main.<br><b>Jadilah yang pertama!</b></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="scr-quiz" class="screen hidden">
+    <button class="back" onclick="toHome()">‹ Kembali</button>
+    <div class="dots" id="dots"></div>
+    <div class="card">
+      <div class="ic" id="qIcon"></div>
+      <div class="stand" id="qStand"></div>
+      <div class="cat" id="qCat"></div>
+      <div class="q" id="qText"></div>
+      <div class="hint">🗣️ Datangi standnya & tanyakan langsung ke penjaganya</div>
+    </div>
+    <label class="fl">Tulis jawaban yang kamu dapat</label>
+    <textarea id="ansInput" rows="3" placeholder="Ketik jawaban dari tim stand di sini..." oninput="checkAns()"></textarea>
+    <button class="next" id="nextBtn" disabled onclick="nextQ()">Lanjut</button>
+  </div>
+
+  <!-- NAME -->
+  <div id="scr-name" class="screen hidden">
+    <button class="back" onclick="toHome()">‹ Batal</button>
+    <h2 style="margin:6px 0 4px">Mantap, 5 stand selesai! 🎉</h2>
+    <p style="color:var(--ink-soft);font-size:14px;margin:0 0 6px">Tulis namamu buat ditempel di foto & galeri.</p>
+    <label class="fl">Nama kamu</label>
+    <input type="text" id="nameInput" placeholder="Nama panggilan..." oninput="document.getElementById('nameNext').disabled=!this.value.trim()">
+    <button class="next" id="nameNext" disabled style="margin-top:20px" onclick="toPhoto()">Lanjut ke Foto →</button>
+  </div>
+
+  <!-- PHOTO -->
+  <div id="scr-photo" class="screen hidden">
+    <button class="back" onclick="toName()">‹ Kembali</button>
+    <h2 style="margin:6px 0 4px">Selfie waktunya! 📸</h2>
+    <p style="color:var(--ink-soft);font-size:14px;margin:0 0 12px">Pilih hiasan, senyum, jepret!</p>
+    <div class="camwrap" id="camwrap">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="canvas" class="hidden"></canvas>
+      <div class="frame"></div>
+    </div>
+    <div class="stickerbar" id="stickerbar"></div>
+    <button class="snap" id="snapBtn" onclick="handleSnap()"></button>
+    <button class="retake hidden" id="retakeBtn" onclick="retake()">Ambil ulang foto</button>
+    <p class="camnote" id="camnote"></p>
+    <button class="next hidden" id="submitBtn" onclick="submitEntry()" style="margin-top:14px">Kirim & Buka Hadiah 🎁</button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="scr-result" class="screen hidden">
+    <div class="result-wrap">
+      <h2 style="margin:6px 0 0">Membuka hadiahmu...</h2>
+      <div class="spin"><div class="hub" id="spinFace">🎁</div></div>
+      <div class="prize-card" id="prizeCard">
+        <h2 id="prizeTitle"></h2>
+        <p id="prizeDesc"></p>
+      </div>
+      <button class="home-btn" onclick="finish()">Lihat Galeri</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TEAMS=[
+ {name:"Make Batik",cat:"Aksesoris Batik",ic:"🧵",q:"Motif batik apa yang paling laris & jadi andalan di Make Batik?"},
+ {name:"SIduni",cat:"Budidaya Sidat",ic:"🐟",q:"Kira-kira berapa lama sidat dibudidayakan sampai siap panen, menurut tim SIduni?"},
+ {name:"Kazura ML",cat:"Pendingin HP",ic:"❄️",q:"Gimana cara kerja pendingin HP buatan Kazura ML supaya HP nggak panas?"},
+ {name:"1s Bucket",cat:"Bunga",ic:"💐",q:"Bunga apa yang paling banyak diminati pembeli di 1s Bucket?"},
+ {name:"Ternak Kreator",cat:"Promosi Konten",ic:"📢",q:"Menurut Ternak Kreator, konten kayak apa yang paling ampuh buat promosi?"}
+];
+const STICKERS=["✨","🎈","🌈","🧡","⭐","🎉"];
+let qi=0, answers=[], name="", photo=null, sticker=STICKERS[0], stream=null, dbcol=null, useDb=false;
+
+function el(id){return document.getElementById(id)}
+function showOnly(id){["scr-home","scr-quiz","scr-name","scr-photo","scr-result"].forEach(s=>el(s).classList.toggle("hidden",s!==id));}
+
+function renderChips(){
+  el("standChips").innerHTML=TEAMS.map(t=>`<div class="stand-chip"><span class="ic">${t.ic}</span><span class="nm">${t.name}</span></div>`).join("");
+}
+
+function toHome(){ stopCam(); showOnly("scr-home"); loadGallery(); }
+function saveProg(){ try{ localStorage.setItem("trivia_progress",JSON.stringify({qi,answers})); }catch(e){} }
+function clearProg(){ try{ localStorage.removeItem("trivia_progress"); }catch(e){} }
+function startQuiz(){
+  qi=0; answers=[];
+  try{ const p=JSON.parse(localStorage.getItem("trivia_progress")||"null"); if(p&&p.answers){ qi=p.qi; answers=p.answers; } }catch(e){}
+  if(qi>=TEAMS.length){ showOnly("scr-name"); return; }
+  showOnly("scr-quiz"); renderQ();
+}
+
+function renderQ(){
+  const t=TEAMS[qi];
+  el("qIcon").textContent=t.ic; el("qStand").textContent=t.name; el("qCat").textContent=t.cat; el("qText").textContent=t.q;
+  el("ansInput").value=""; el("nextBtn").disabled=true;
+  el("dots").innerHTML=TEAMS.map((_,i)=>`<div class="dot ${i<qi?"done":i===qi?"on":""}"></div>`).join("");
+}
+function checkAns(){ el("nextBtn").disabled = el("ansInput").value.trim().length<1; }
+function nextQ(){
+  answers.push({team:TEAMS[qi].name, ans:el("ansInput").value.trim()});
+  qi++; saveProg();
+  if(qi<TEAMS.length){ renderQ(); } else { showOnly("scr-name"); }
+}
+function toName(){ showOnly("scr-name"); }
+
+async function toPhoto(){
+  name = el("nameInput").value.trim();
+  showOnly("scr-photo");
+  renderStickers();
+  await startCam();
+}
+function renderStickers(){
+  el("stickerbar").innerHTML = STICKERS.map(s=>`<button class="sk ${s===sticker?"active":""}" onclick="pickSticker('${s}')">${s}</button>`).join("");
+}
+function pickSticker(s){ sticker=s; renderStickers(); }
+
+async function startCam(){
+  el("camnote").textContent="";
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"user"},audio:false});
+    el("video").srcObject = stream;
+    el("video").classList.remove("hidden");
+    el("canvas").classList.add("hidden");
+    el("snapBtn").classList.remove("hidden");
+    el("retakeBtn").classList.add("hidden");
+    el("submitBtn").classList.add("hidden");
+  }catch(e){
+    el("camnote").textContent="Kamera tidak bisa diakses di perangkat/browser ini. Izinkan akses kamera lalu muat ulang halaman.";
+    el("snapBtn").classList.add("hidden");
+  }
+}
+function stopCam(){ if(stream){ stream.getTracks().forEach(tr=>tr.stop()); stream=null; } }
+
+function handleSnap(){
+  const video=el("video"), canvas=el("canvas");
+  const size=360; canvas.width=size; canvas.height=size*4/3;
+  const ctx=canvas.getContext("2d");
+  const vw=video.videoWidth||size, vh=video.videoHeight||size*4/3;
+  const scale=Math.max(canvas.width/vw, canvas.height/vh);
+  const dw=vw*scale, dh=vh*scale;
+  ctx.save(); ctx.translate(canvas.width,0); ctx.scale(-1,1);
+  ctx.drawImage(video, (canvas.width-dw)/2, (canvas.height-dh)/2, dw, dh);
+  ctx.restore();
+  decorate(ctx, canvas.width, canvas.height);
+  photo = canvas.toDataURL("image/jpeg",0.65);
+  video.classList.add("hidden"); canvas.classList.remove("hidden");
+  el("snapBtn").classList.add("hidden");
+  el("retakeBtn").classList.remove("hidden");
+  el("submitBtn").classList.remove("hidden");
+  stopCam();
+}
+function decorate(ctx,w,h){
+  ctx.strokeStyle="#FFC531"; ctx.lineWidth=10; ctx.strokeRect(5,5,w-10,h-10);
+  ctx.font="42px sans-serif"; ctx.textBaseline="top";
+  ctx.fillText(sticker, 16, 16);
+  ctx.fillText(sticker, w-58, h-64);
+  ctx.font="bold 22px sans-serif"; ctx.fillStyle="#0C3E8C";
+  ctx.fillRect(0,h-46,w,46);
+  ctx.fillStyle="#fff";
+  ctx.fillText("Trivia Bazar" + (name?(" • "+name):""), 14, h-38);
+}
+function retake(){ startCam(); el("retakeBtn").classList.add("hidden"); el("submitBtn").classList.add("hidden"); }
+
+function weightedPrize(){
+  const r=Math.random();
+  if(r<0.02) return "rare";
+  if(r<0.10) return "biasa";
+  return "zonk";
+}
+const PRIZE_INFO={
+  rare:{title:"HADIAH RARE! 🏆",desc:"Wah beruntung banget! Tunjukkan layar ini ke panitia untuk ambil hadiah spesialmu.",icon:"🏆"},
+  biasa:{title:"Hadiah Biasa 🎊",desc:"Selamat! Kamu dapat hadiah. Tunjukkan layar ini ke panitia ya.",icon:"🎊"},
+  zonk:{title:"Zonk dulu ya~ 😅",desc:"Belum rezeki kali ini. Makasih udah main dan keliling semua stand!",icon:"🙈"}
+};
+
+async function submitEntry(){
+  el("submitBtn").disabled=true; el("submitBtn").textContent="Mengirim...";
+  const prize=weightedPrize();
+  const entry={id:(crypto.randomUUID?crypto.randomUUID():(""+Date.now()+Math.random())),name:name||"Anonim",photo,prize,ts:Date.now(),answers};
+  await saveEntry(entry); clearProg();
+  showOnly("scr-result");
+  el("prizeCard").className="prize-card "+prize;
+  el("prizeTitle").textContent=PRIZE_INFO[prize].title;
+  el("prizeDesc").textContent=PRIZE_INFO[prize].desc;
+  el("spinFace").textContent=PRIZE_INFO[prize].icon;
+}
+function finish(){ toHome(); }
+
+/* ---- storage: Firestore (publik, realtime) + cadangan lokal ---- */
+let cache=[];
+function localList(){ try{ return JSON.parse(localStorage.getItem("trivia_entries")||"[]"); }catch(e){ return []; } }
+function localAdd(entry){ try{ const l=localList(); l.unshift(entry); localStorage.setItem("trivia_entries", JSON.stringify(l.slice(0,30))); }catch(e){} }
+window.onGalleryData=function(items){ cache=items; loadGallery(); };
+async function saveEntry(entry){
+  if(window.fb){ try{ await window.fb.save(entry); return; }catch(e){ console.error(e); } }
+  localAdd(entry); cache=[entry,...cache];
+}
+function loadGallery(){
+  const items = window.fb ? cache : localList();
+  el("galCount").textContent = items.length + " foto";
+  el("emptyMsg").classList.toggle("hidden", items.length>0);
+  el("gallery").innerHTML = items.map(it=>`
+    <div class="polaroid">
+      <img src="${it.photo}" alt="Foto ${escapeHtml(it.name)}">
+      <div class="cap"><span class="nm">${escapeHtml(it.name)}</span><span class="badge ${it.prize}">${it.prize==='rare'?'RARE':it.prize==='biasa'?'HADIAH':'ZONK'}</span></div>
+    </div>`).join("");
+}
+function escapeHtml(s){ return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+renderChips();
+loadGallery();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+const app = initializeApp({
+  apiKey: "AIzaSyAOXX2EHNv2LKwtKmFpJXt_viVB0YHfbLc",
+  authDomain: "timunykmigames.firebaseapp.com",
+  projectId: "timunykmigames",
+  storageBucket: "timunykmigames.firebasestorage.app",
+  messagingSenderId: "90973957781",
+  appId: "1:90973957781:web:baa0fad568c53b7106359c"
+});
+const db = getFirestore(app);
+const col = collection(db, "submissions");
+window.fb = { save: (e) => setDoc(doc(col, e.id), e) };
+onSnapshot(query(col, orderBy("ts","desc"), limit(30)),
+  snap => window.onGalleryData(snap.docs.map(d => d.data())),
+  err => console.error("Firestore:", err));
+</script>
+</body>
+</html>
